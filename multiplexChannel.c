@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "transmissionChannel.h"
+#include "multiplexChannel.h"
 
 unsigned short zapros_ad = 0;
 unsigned short zapros__giv = 0;
@@ -37,12 +37,12 @@ void send(int configd, int n_gr_bvu, str strMas[3], unsigned short to_ad[27],  u
 
     if(n_gr_bvu == n_ved){
 
-		if(((zapros_ad & 0x1E00) >> 8) == 0x2){
+		if(((zapros_ad & 0x1E00) >> 9) == 0x2){
 		    printf("1 - OK!\n");
             copyMas(to_ad_dr, to_ad, 27);
             to_ad_dr[27] = DKS(to_ad, 27);
 
-	    	strMas[i].KC = 0x7D9C;// 11111 (31 адрес) 0 (выдача) 1100 (12 подадрес) 11100 (28 слов) 11111 0 1100 11100
+	    	strMas[i].KC = 0xF99C;// 11111 (31 адрес) 0 (выдача) 01100 (12 подадрес) 11100 (28 слов) 11111 0 01100 11100
 	    	strMas[i].ptr_mass = to_ad_dr;
 	    	strMas[i].ptr_SZO = &szoad_1f;
 
@@ -55,7 +55,7 @@ void send(int configd, int n_gr_bvu, str strMas[3], unsigned short to_ad[27],  u
             copyMas(to_giv_dr, to_giv, 10);
             to_giv_dr[10] = DKS(to_giv, 10);
 	        
-	        strMas[i].KC = 0x9B92;// 10011 (19 адрес) 0 (выдача) 11100 (28 подадрес) 10010 (18 слов)  10011 0 11100 10010
+	        strMas[i].KC = 0x9B8B;// 10011 (19 адрес) 0 (выдача) 11100 (28 подадрес) 01011 (11 слов)  10011 0 11100 01011
 	    	strMas[i].ptr_mass = to_giv_dr;
 	    	strMas[i].ptr_SZO = &szogiv_1f;
 	    	
@@ -73,10 +73,10 @@ void receive(str strMas[3], unsigned short from_ad_dr[19],  unsigned short from_
     unsigned short dks = 0;
     int i = 0;
 
-	if(((zapros_ad & 0x1E00) >> 11) == 0x3){
+	if(((zapros_ad & 0x1E00) >> 9) == 0x3){
         printf("3 - OK!\n");
 
-	    strMas[i].KC = 0x7F33;// 11111 (31 адрес) 1 (прием) 1001 (9 подадрес) 10011 (19 слов)  11111 1 1001 10011
+	    strMas[i].KC = 0xFD33;// 11111 (31 адрес) 1 (прием) 01001 (9 подадрес) 10011 (19 слов)  11111 1 01001 10011
 	    strMas[i].ptr_mass = from_ad_dr;
 	    strMas[i].ptr_SZO = &szoad_2f;
 	    i++;
@@ -97,7 +97,7 @@ void receive(str strMas[3], unsigned short from_ad_dr[19],  unsigned short from_
 	i = 0;
     while(strMas[i].KC != 0){
 
-		if(strMas[i].KC ==  0x7F33){
+		if(strMas[i].KC ==  0xFD33){
 			copyMas(from_ad, strMas[i].ptr_mass, 18);
 			dks = DKS(strMas[i].ptr_mass, 18);
 			
